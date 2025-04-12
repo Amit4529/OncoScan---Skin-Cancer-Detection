@@ -5,11 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const imagePreview = document.getElementById('image-preview');
     const scanForm = document.getElementById('scanForm');
     const loadingOverlay = document.getElementById('loading-overlay');
-    
+
     // Counter animation for stats
     const counters = document.querySelectorAll('.counter');
     const speed = 200;
-    
+
     // Intersection Observer for animations
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -33,51 +33,49 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, { threshold: 0.5 });
-    
+
     counters.forEach(counter => {
         observer.observe(counter);
     });
-    
+
     // Animate elements when they come into view
     const animateOnScroll = () => {
         const elements = document.querySelectorAll('.info-card, .scan-form');
         elements.forEach(element => {
             const elementPosition = element.getBoundingClientRect().top;
             const screenPosition = window.innerHeight / 1.3;
-            
+
             if (elementPosition < screenPosition) {
                 element.classList.add('animate__animated', 'animate__fadeInUp');
             }
         });
     };
-    
+
     window.addEventListener('scroll', animateOnScroll);
-    
+
     // Handle file upload and preview with animation
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
         if (file) {
             const reader = new FileReader();
-            
+
             reader.onload = function(e) {
                 uploadPlaceholder.style.display = 'none';
                 imagePreview.style.display = 'block';
-                
-                // Create image element with animation
+
                 const img = document.createElement('img');
                 img.src = e.target.result;
                 img.classList.add('animate__animated', 'animate__fadeIn');
-                
-                // Clear previous preview
+
                 imagePreview.innerHTML = '';
                 imagePreview.appendChild(img);
             }
-            
+
             reader.readAsDataURL(file);
         }
     });
 
-    // Handle drag and drop with visual feedback
+    // Drag and drop functionality
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         uploadContainer.addEventListener(eventName, preventDefaults, false);
     });
@@ -114,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleDrop(e) {
         const dt = e.dataTransfer;
         const files = dt.files;
-        
+
         if (files.length) {
             imageUpload.files = files;
             const event = new Event('change');
@@ -122,71 +120,88 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Form submission with animated loading overlay
+    // Submit form with real API call
     scanForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        // Validate form
+
         const age = document.getElementById('age').value;
         const gender = document.getElementById('gender').value;
         const image = document.getElementById('image-upload').files[0];
-        
+
         if (!age || !gender || !image) {
-            // Shake animation for validation error
             scanForm.classList.add('animate__animated', 'animate__shakeX');
             setTimeout(() => {
                 scanForm.classList.remove('animate__animated', 'animate__shakeX');
             }, 1000);
             return;
         }
-        
-        // Show loading overlay with fade in
+
         loadingOverlay.style.display = 'flex';
         loadingOverlay.classList.add('animate__animated', 'animate__fadeIn');
-        
-        // Simulate analysis (replace with actual API call)
-        setTimeout(function() {
-            // Hide loading overlay with fade out
+
+        const formData = new FormData();
+        formData.append('age', age);
+        formData.append('gender', gender);
+        formData.append('image', image);
+
+        fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
             loadingOverlay.classList.remove('animate__fadeIn');
             loadingOverlay.classList.add('animate__fadeOut');
-            
+
             setTimeout(() => {
                 loadingOverlay.style.display = 'none';
                 loadingOverlay.classList.remove('animate__fadeOut');
-                
-                // Show a simple alert (in a real app, you'd show proper results)
-                alert('Analysis complete! This is a placeholder for the actual analysis results.');
+
+                if (data.error) {
+                    alert(`Error: ${data.error}`);
+                } else {
+                    alert(`Result: ${data.result}\nConfidence Score: ${(data.score * 100).toFixed(2)}%`);
+                }
             }, 500);
-        }, 3000);
+        })
+        .catch(error => {
+            loadingOverlay.classList.remove('animate__fadeIn');
+            loadingOverlay.classList.add('animate__fadeOut');
+
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                loadingOverlay.classList.remove('animate__fadeOut');
+                alert(`Something went wrong: ${error.message}`);
+            }, 500);
+        });
     });
-    
-    // Add ripple effect to buttons
+
+    // Ripple effect
     const buttons = document.querySelectorAll('.analyze-btn, .contact-button');
     buttons.forEach(button => {
         button.addEventListener('mousedown', function(e) {
             const x = e.clientX - e.target.getBoundingClientRect().left;
             const y = e.clientY - e.target.getBoundingClientRect().top;
-            
+
             const ripple = document.createElement('span');
             ripple.classList.add('ripple');
             ripple.style.left = `${x}px`;
             ripple.style.top = `${y}px`;
-            
+
             this.appendChild(ripple);
-            
+
             setTimeout(() => {
                 ripple.remove();
             }, 600);
         });
     });
-    
-    // Add additional animations on page load
+
+    // Animate hero elements
     const animateElements = document.querySelectorAll('.hero h2, .hero p, .hero-stats, .hero-image');
     animateElements.forEach((element, index) => {
         element.classList.add('animate__animated', 'animate__fadeInUp');
         element.style.animationDelay = `${0.3 + (index * 0.2)}s`;
     });
-    
-    // Initialize animations
+
     animateOnScroll();
 });
