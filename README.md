@@ -111,5 +111,10 @@ Installation Requirements: Before running the project, install the necessary Pyt
 pip install tensorflow pandas numpy scikit-learn matplotlib
 
 ----
+![image](https://github.com/user-attachments/assets/d744a2fe-508b-4a61-88ba-1b49a5003798)
+![image](https://github.com/user-attachments/assets/cb96ec07-c79f-483c-8f5c-7de555c81a81)
+![image](https://github.com/user-attachments/assets/4b2a4624-55fa-430c-9f4a-8198ff5718f3)
+![image](https://github.com/user-attachments/assets/e3f5add4-2583-4f3d-94c0-b957f175fc86)
+
 
 
