@@ -30,12 +30,14 @@ def predict(image_path, age, gender):
 
     # Predict
     prediction = model.predict([image, metadata])[0][0]
-    print(f"\nPrediction Score: {prediction:.4f}")
-    if prediction >= 0.5:
-        print("⚠ High risk of skin cancer. Please consult a dermatologist.")
-    else:
-        print("✅ Low risk of skin cancer. Still, regular checkups are important.")
+    percentage = prediction * 100
+    print(f"\nPrediction Confidence: {percentage:.2f}%")
 
+    if prediction >= 0.41:
+     print("Based on the analysis, there's a risk of skin cancer.\nPlease consult a dermatologist for a professional diagnosis.")
+    else:
+     print("Based on the analysis, the risk of skin cancer is *low*.\nStill, regular checkups are important.")
+        
 if __name__ == "__main__":
     # User input
     img_path = input("Enter image path: ")
