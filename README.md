@@ -9,7 +9,6 @@
 ## 🚀 Project Overview
 
 **OncoScan** is a hybrid skin cancer detection system that combines **Convolutional Neural Networks (CNNs)** for dermatoscopic image analysis with **tabular 
-
 metadata** (age, gender, and anatomical site) to enhance classification accuracy.
 
 🎯 The goal is to support **early and reliable detection** of malignant skin lesions, potentially saving lives through timely diagnosis.
@@ -50,10 +49,15 @@ metadata** (age, gender, and anatomical site) to enhance classification accuracy
 ## 🛠️ Project Structure
 
 ONCOSCAN---SKIN-CANCER-DETECTION/
+
 │
+
 ├── app.py                       # Flask app (main entry)
+
 ├── main.py                      # Additional routing or logic
+
 ├── model.py                     # Model definition/loading
+
 ├── data_utils.py                # Data preprocessing utilities
 ├── cancer_detection_model1.h5   # Trained model
 ├── output.py                    # Output handling logic (if needed)
