@@ -11,9 +11,18 @@
 **OncoScan** is a hybrid skin cancer detection system that combines **Convolutional Neural Networks (CNNs)** for dermatoscopic image analysis with **tabular 
 metadata** (age, gender, and anatomical site) to enhance classification accuracy.
 
+Current Accuracy - 73-74%
+
 🎯 The goal is to support **early and reliable detection** of malignant skin lesions, potentially saving lives through timely diagnosis.
 
 ---
+
+🔧 Work in Progress / To-Do
+
+-Output screen UI/UX 
+-Dataset Addition and improvement in Accuracy (upto 80-85%)
+-Additional Features
+
 
 ## 📊 Dataset: HAM10000
 
@@ -88,9 +97,13 @@ ONCOSCAN---SKIN-CANCER-DETECTION/
 
 Installation Requirements: Before running the project, install the necessary Python packages:
 •	TensorFlow
+
 •	Pandas
+
 •	NumPy
+
 •	scikit-learn
+
 •	matplotlib (optional for visualization)
 
 pip install tensorflow pandas numpy scikit-learn matplotlib
