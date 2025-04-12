@@ -110,19 +110,4 @@ pip install tensorflow pandas numpy scikit-learn matplotlib
 
 ----
 
-## 🧠 Model Architecture
 
-### 🔹 Image Pathway (CNN)
-- ResNet50 pretrained on ImageNet (frozen)
-- Global Average Pooling
-- Dense Layer: 128 units
-
-### 🔹 Metadata Pathway (Tabular)
-- Dense Layer: 16 units
-
-### 🔹 Fusion & Output
-- Concatenation of image and tabular features
-- Dense Layer: 64 units
-- Final Output: Sigmoid activation (Binary Classification)
-
----
