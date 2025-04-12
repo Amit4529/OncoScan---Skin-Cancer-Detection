@@ -59,18 +59,31 @@ ONCOSCAN---SKIN-CANCER-DETECTION/
 ├── model.py                     # Model definition/loading
 
 ├── data_utils.py                # Data preprocessing utilities
+
 ├── cancer_detection_model1.h5   # Trained model
+
 ├── output.py                    # Output handling logic (if needed)
+
 │
+
 ├── templates/
+
 │   └── index.html               # HTML UI template
+
 │
+
 ├── static/
+
 │   ├── styles.css               # CSS file
+
 │   ├── script.js                # JavaScript file
+
 │   ├── logo.png                 # Web interface logo
+
 │   └── 06-skin-cancer-moles.png # Sample UI image
+
 │
+
 ├── README.md                    # Project documentation
 
 Installation Requirements: Before running the project, install the necessary Python packages:
