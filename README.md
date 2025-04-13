@@ -13,6 +13,8 @@ metadata** (age, gender, and anatomical site) to enhance classification accuracy
 
 Current Accuracy - 73-74%
 
+Server is not connected due to memory limit exceeded on render/replit platforms, but the modal is completely ready
+
 🎯 The goal is to support **early and reliable detection** of malignant skin lesions, potentially saving lives through timely diagnosis.
 
 ---
