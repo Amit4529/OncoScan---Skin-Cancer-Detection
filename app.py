@@ -5,6 +5,9 @@ import os
 import tensorflow as tf
 import numpy as np
 import cv2
+import gdown
+
+
 
 app = Flask(__name__, static_folder='static', template_folder='docs')
 CORS(app)
@@ -20,8 +23,23 @@ def load_model_safe(path):
             print(f"Error loading {path}: {str(e)}")
     return None
 
+# model_auc = load_model_safe('best_skin_cancer_auc.h5')
+# model_recall = load_model_safe('best_skin_cancer_recall.h5')
+# Step 1: Download models from Google Drive if not already present
+models_info = {
+    "best_skin_cancer_recall.h5": "1asWlGYmajSTFYGCSMPBbxRplAcCp5NRH",
+    "best_skin_cancer_auc.h5": "19fXD76gaTdrHIqe44fwYgYAQ9-zycJlt"
+}
+
+for filename, file_id in models_info.items():
+    if not os.path.exists(filename):
+        print(f"Downloading {filename} from Google Drive...")
+        gdown.download(f'https://drive.google.com/uc?id={file_id}', filename, quiet=False)
+
+# Step 2: Load models safely
 model_auc = load_model_safe('best_skin_cancer_auc.h5')
 model_recall = load_model_safe('best_skin_cancer_recall.h5')
+
 
 def preprocess_image(image_path):
     try:
