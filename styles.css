@@ -142,6 +142,7 @@ header {
     height: 60px;
     position: relative;
     z-index: 2;
+    border-radius: 50%;
     /* animation: rotate 20s linear infinite; */
 }
 
@@ -406,6 +407,121 @@ h1 span {
 
 .hero-image:hover img {
     transform: perspective(1000px) rotateY(0deg);
+}
+
+/* Results Section Styles */
+.results-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.results-section.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.results-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.results-header h3 {
+    font-size: 24px;
+    color: #fff;
+    margin: 0;
+}
+
+.close-results {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s ease;
+}
+
+.close-results:hover {
+    transform: rotate(90deg);
+}
+
+.results-content {
+    color: #fff;
+    line-height: 1.6;
+}
+
+.result-item {
+    margin-bottom: 15px;
+}
+
+.result-label {
+    font-weight: 600;
+    color: #4fc3f7;
+    margin-bottom: 5px;
+}
+
+.result-value {
+    font-size: 18px;
+}
+
+.risk-indicator {
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.risk-low {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+}
+
+.risk-medium {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+}
+
+.risk-high {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+}
+
+.recommendation {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border-left: 4px solid #4fc3f7;
+}
+
+.recommendation-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #4fc3f7;
 }
 
 .pulse-effect {
