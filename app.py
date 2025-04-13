@@ -39,6 +39,7 @@ for filename, file_id in models_info.items():
 # Step 2: Load models safely
 model_auc = load_model_safe('best_skin_cancer_auc.h5')
 model_recall = load_model_safe('best_skin_cancer_recall.h5')
+print(f"Models loaded - AUC: {model_auc is not None}, Recall: {model_recall is not None}")
 
 
 def preprocess_image(image_path):
@@ -110,6 +111,9 @@ def predict():
 
         image = preprocess_image(filepath)
         metadata = preprocess_metadata(age, gender)
+        print(f"Image shape: {image.shape}")
+        print(f"Metadata: {metadata}")
+
         os.remove(filepath)
 
         if image is None or metadata is None:
