@@ -13,7 +13,8 @@ metadata** (age, gender, and anatomical site) to enhance classification accuracy
 
 Current Accuracy - 73-74%
 
-Video Link:- https://drive.google.com/file/d/1zsE8II9oWUNXoy6Bw5OccfVCHBoPtUpL/view  (there was eroor in video we submitted)
+Video Link:- https://drive.google.com/file/d/1zsE8II9oWUNXoy6Bw5OccfVCHBoPtUpL/view  (there was error in video we submitted)
+
 Server is not connected due to memory limit exceeded on render/replit platforms, but the modal is completely ready
 
 🎯 The goal is to support **early and reliable detection** of malignant skin lesions, potentially saving lives through timely diagnosis.
@@ -28,14 +29,12 @@ Images: 20,000 high-resolution dermatoscopic images
 Metadata:
 
 Patient Age
-
-Patient Sex
-
 Image
-
+Patient Sex
 Binary Labels:
 🟥 Malignant (1) → Includes types like melanoma, basal cell carcinoma, and actinic keratosis
 🟩 Benign (0) → Includes all other non-cancerous skin lesion types
+
 ---
 
 ## 🧠 Model Architecture
