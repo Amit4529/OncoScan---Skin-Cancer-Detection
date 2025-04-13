@@ -6,7 +6,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-app = Flask(__name__, static_folder='static', template_folder='templates')
+app = Flask(__name__, static_folder='static', template_folder='docs')
 CORS(app)
 
 IMG_SIZE = (128, 128)
