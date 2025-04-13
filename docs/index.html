@@ -1442,7 +1442,9 @@ footer {
             formData.append('gender', gender);
             formData.append('image', image);
     
-            fetch('http://127.0.0.1:5000/predict', {
+            //fetch('http://127.0.0.1:5000/predict', {
+                fetch('https://oncoscan-skin-cancer-detection.onrender.com/predict', {
+
                 method: 'POST',
                 body: formData
             })
