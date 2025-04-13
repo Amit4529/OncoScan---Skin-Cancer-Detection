@@ -130,9 +130,12 @@ def predict():
 
         response = get_user_friendly_result(label, confidence)
         return jsonify(response)
-
     except Exception as e:
+        import traceback
+        traceback.print_exc()  # Will print the full error traceback in the logs
         return jsonify({'error': str(e)}), 500
+
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # use Render's dynamic port
