@@ -17,13 +17,6 @@ Current Accuracy - 73-74%
 
 ---
 
-🔧 Work in Progress / To-Do
-
--Output screen UI/UX 
-
--Dataset Addition and improvement in Accuracy (upto 80-85%)
-
--Additional Features
 
 
 ## 📊 Dataset: HAM10000
