@@ -13,41 +13,64 @@ metadata** (age, gender, and anatomical site) to enhance classification accuracy
 
 Current Accuracy - 73-74%
 
+Video Link:- https://drive.google.com/file/d/1zsE8II9oWUNXoy6Bw5OccfVCHBoPtUpL/view  (there was error in video we submitted)
+
+Server is not connected due to memory limit exceeded on render/replit platforms, but the modal is completely ready
+
 🎯 The goal is to support **early and reliable detection** of malignant skin lesions, potentially saving lives through timely diagnosis.
 
 ---
 
 
 
-## 📊 Dataset: HAM10000
+## 📊 Dataset: BNC20000
+Full Name: Binary Neoplastic Classification with 20,000 dermatoscopic images
+Images: 20,000 high-resolution dermatoscopic images
+Metadata:
 
-- **Full Name**: *Human Against Machine with 10,000 training images*
-- **Images**: 10,015 high-resolution dermatoscopic images
-- **Metadata**:
-  - Patient **Age**
-  - Patient **Sex**
-  - **Anatomical Site** of the lesion
-- **Binary Labels**:
-  - 🟥 **Malignant (1)** → `mel`, `bcc`, `akiec`
-  - 🟩 **Benign (0)** → All other classes
+Patient Age
+Image
+Patient Sex
+Binary Labels:
+🟥 Malignant (1) → Includes types like melanoma, basal cell carcinoma, and actinic keratosis
+🟩 Benign (0) → Includes all other non-cancerous skin lesion types
 
 ---
 
 ## 🧠 Model Architecture
+🔹 Image Pathway (CNN)
 
-### 🔹 Image Pathway (CNN)
-- ResNet50 (pretrained on ImageNet, frozen layers)
-- Global Average Pooling
-- Dense Layer → 128 units
+Input: 128×128×3 dermatoscopic image
 
-### 🔹 Metadata Pathway (Tabular)
-- Dense Layer → 16 units
+Conv2D Layers: 32 → 64 → 128 → 256 filters
 
-### 🔹 Fusion & Output
-- Concatenation of CNN & metadata outputs
-- Dense Layer → 64 units
-- **Output Layer** → Sigmoid activation (Binary Classification)
+Each layer: ReLU Activation, Batch Normalization, MaxPooling
 
+Flatten Layer at the end
+
+🔹 Metadata Pathway (Tabular)
+
+Input: 3 features (Age, Sex, Diagnosis_1)
+
+Dense Layer → 32 units with ReLU
+
+Dropout (0.3) for regularization
+
+🔹 Fusion & Output
+
+Concatenation of Image & Metadata branches
+
+Dense → 512 → Dropout (0.5)
+
+Dense → 256 → Dropout (0.3)
+
+Output Layer → 1 unit with Sigmoid activation
+
+Optimizer: Adam
+
+Loss: Binary Crossentropy
+
+Metrics: Accuracy, AUC, Precision, Recall
 ---
 
 ## 🛠️ Project Structure
@@ -62,9 +85,8 @@ ONCOSCAN---SKIN-CANCER-DETECTION/
 
 ├── model.py                     # Model definition/loading
 
-├── data_utils.py                # Data preprocessing utilities
+├── data_preprocessing.py                # Data preprocessing utilities
 
-├── cancer_detection_model1.h5   # Trained model
 
 ├── output.py                    # Output handling logic (if needed)
 
