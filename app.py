@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, send_file
+
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
@@ -23,7 +24,7 @@ def preprocess_metadata(age, gender):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return send_file('index.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
