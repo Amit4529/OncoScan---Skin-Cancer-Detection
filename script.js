@@ -153,7 +153,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                             <div class="result-item">
                                 <div class="result-label">Confidence</div>
-                                <div class="result-value">${(data.score * 100).toFixed(2)}%</div>
+                                <div class="result-value">
+                                    ${!isNaN(data.score) ? (data.score * 100).toFixed(2) + '%' : 'Confidence score not available'}
+                                 </div>
+
                             </div>
                             <div class="recommendation">
                                 <div class="recommendation-title">Recommendation</div>

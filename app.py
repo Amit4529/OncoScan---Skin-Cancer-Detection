@@ -143,7 +143,9 @@ def predict():
         confidence = avg_pred if avg_pred >= 0.5 else 1 - avg_pred
 
         response = get_user_friendly_result(label, confidence)
-        response["score"] = round(float(confidence), 4)
+        # response["score"] = round(float(confidence), 4)
+        response["score"] = round(float(confidence), 4) if not np.isnan(confidence) else None
+
         return jsonify(response)
 
     except Exception as e:
