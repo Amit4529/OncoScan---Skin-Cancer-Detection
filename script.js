@@ -128,8 +128,8 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('gender', gender);
         formData.append('image', image);
 
-        // fetch('https://oncoscan-skin-cancer-detection.onrender.com/predict', {
-        fetch('http://127.0.0.1:5000/predict', {
+        fetch('https://oncoscan-skin-cancer-detection.onrender.com/predict', {
+        // fetch('http://127.0.0.1:5000/predict', {
             method: 'POST',
             body: formData
         })
