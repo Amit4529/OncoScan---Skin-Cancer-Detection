@@ -65,7 +65,7 @@ def preprocess_metadata(age, gender):
 # User-friendly result
 def get_user_friendly_result(label, confidence):
     print(f"Label: {label}, Confidence: {confidence}")
-    if label == 'Malignant':
+    if confidence>0.65 :
         return {
             "result": "There are signs that this could be a malignant lesion. Please consult a certified dermatologist immediately. (Cancerous)",
             "precautions": [
@@ -74,22 +74,13 @@ def get_user_friendly_result(label, confidence):
                 "Seek medical attention for biopsy and clinical diagnosis."
             ]
         }
-    elif confidence < 0.60:
+    else:
         return {
-            "result": "This lesion is likely benign, but it may carry some risk. Regular monitoring is recommended (Non-Cancerous).",
+            "result": "This lesion is likely benign. Regular monitoring is recommended (Non-Cancerous).",
             "precautions": [
                 "Avoid prolonged sun exposure.",
                 "Reassess with a dermatologist if the lesion changes shape, color, or size.",
                 "Stay hydrated and follow a skin care routine."
-            ]
-        }
-    else:
-        return {
-            "result": "The lesion appears benign and does not currently show signs of skin cancer.",
-            "precautions": [
-                "Still, it's wise to monitor skin changes regularly.",
-                "Use sun protection, especially during peak hours.",
-                "Maintain regular dermatological checkups."
             ]
         }
 
