@@ -11,11 +11,9 @@
 **OncoScan** is a hybrid skin cancer detection system that combines **Convolutional Neural Networks (CNNs)** for dermatoscopic image analysis with **tabular 
 metadata** (age, gender, and anatomical site) to enhance classification accuracy.
 
-Current Accuracy - 73-74%
+Current Accuracy - 82-83%
 
-Video Link:- https://drive.google.com/file/d/1zsE8II9oWUNXoy6Bw5OccfVCHBoPtUpL/view  (there was error in video we submitted)
-
-made some commit after 4:30 just because of server deploy due to large memory (but now everything is done everything is been fixed)
+Video Link:- https://drive.google.com/file/d/1zsE8II9oWUNXoy6Bw5OccfVCHBoPtUpL/view
 
 🎯 The goal is to support **early and reliable detection** of malignant skin lesions, potentially saving lives through timely diagnosis.
 
