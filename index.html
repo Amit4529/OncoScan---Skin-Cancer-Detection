@@ -22,7 +22,7 @@
         <header>
             <div class="logo-container animate__animated animate__fadeInDown">
                 <div class="logo-wrapper">
-                    <img src="logo.png" alt="OncoScan Logo" class="logo">
+                    <img src="assets/logo.png" alt="OncoScan Logo" class="logo">
                     <div class="logo-glow"></div>
                 </div>
                 <h1>Onco<span>Scan</span></h1>
@@ -39,25 +39,24 @@
             <section class="hero animate__animated animate__fadeIn">
                 <div class="hero-content">
                     <h2 class="animate__animated animate__fadeInUp animate__delay-1s">Early Detection <span class="highlight">Saves Lives</span></h2>
-                    <p class="animate__animated animate__fadeInUp animate__delay-1s">OncoScan uses advanced AI technology to help identify potential skin cancer indicators with up to 95% accuracy.</p>
+                    <p class="animate__animated animate__fadeInUp animate__delay-1s">OncoScan uses advanced AI-powered deep learning to identify 8 types of skin conditions with clinical-grade accuracy.</p>
                     <div class="hero-stats animate__animated animate__fadeInUp animate__delay-2s">
                         <div class="stat">
-                            <div class="stat-number counter" data-target="99">0</div>
-                            <div class="stat-label">Accuracy Rate</div>
+                            <div class="stat-number counter" data-target="88">0</div>
+                            <div class="stat-label">Accuracy Rate %</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-number counter" data-target="95">0</div>
-                            <div class="stat-label">Early Detection Success</div>
+                            <div class="stat-number counter" data-target="97">0</div>
+                            <div class="stat-label">AUC Score %</div>
                         </div>
                         <div class="stat">
-                            <div class="stat-number counter" data-target="24">0</div>
-                            <div class="stat-label">Hour Results</div>
+                            <div class="stat-number counter" data-target="8">0</div>
+                            <div class="stat-label">Skin Conditions</div>
                         </div>
                     </div>
                 </div>
                 <div class="hero-image animate__animated animate__fadeInRight animate__delay-1s">
-                    <!-- <img src="06-skin-cancer-moles.png" alt="Skin Cancer Detection"> -->
-                    <img src="06-skin-cancer-moles.png" alt="Skin Cancer Detection" class="shifted-image">
+                    <img src="assets/06-skin-cancer-moles.png" alt="Skin Cancer Detection" class="shifted-image">
 
                     <div class="pulse-effect"></div>
                 </div>
@@ -123,12 +122,27 @@
                         <div class="form-group">
                             <label for="gender">Gender</label>
                             <div class="select-wrapper">
-                                <select id="gender" name="gender" required>
+                            <select id="gender" name="gender" required>
                                     <option value="" disabled selected>Select gender</option>
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
                                     <option value="other">Other</option>
-                                    <option value="prefer-not-to-say">Prefer not to say</option>
+                                </select>
+                                <div class="select-arrow"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="body-site">Body Site (where is the lesion?)</label>
+                            <div class="select-wrapper">
+                                <select id="body-site" name="body_site">
+                                    <option value="unknown" selected>Not sure / Unknown</option>
+                                    <option value="anterior_torso">Front Torso (Chest/Abdomen)</option>
+                                    <option value="posterior_torso">Back Torso</option>
+                                    <option value="upper_extremity">Arms / Hands</option>
+                                    <option value="lower_extremity">Legs / Feet</option>
+                                    <option value="head_neck">Head / Neck / Face</option>
+                                    <option value="other">Other</option>
                                 </select>
                                 <div class="select-arrow"></div>
                             </div>
@@ -173,7 +187,7 @@
         </main>
 
         <footer class="animate__animated animate__fadeInUp">
-            <p>&copy; 2025 OncoScan. All rights reserved.</p>
+            <p>&copy; 2026 OncoScan. All rights reserved.</p>
         </footer>
     </div>
 

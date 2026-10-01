@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const age = document.getElementById('age').value;
         const gender = document.getElementById('gender').value;
+        const bodySite = document.getElementById('body-site').value;
         const image = imageUpload.files[0];
 
         if (!age || !gender || !image) {
@@ -126,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData();
         formData.append('age', age);
         formData.append('gender', gender);
+        formData.append('body_site', bodySite);
         formData.append('image', image);
 
         // fetch('https://oncoscan-skin-cancer-detection.onrender.com/predict', {
@@ -145,22 +147,75 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (data.error) {
                         alert(`Error: ${data.error}`);
                     } else {
-                        // Build result screen
+                        const riskColors = {
+                            'HIGH': '#ef4444',
+                            'MODERATE': '#f59e0b',
+                            'LOW': '#22c55e'
+                        };
+                        const riskColor = riskColors[data.prediction.risk] || '#6b7280';
+                        const malProb = data.malignant_probability || 0;
+
+                        // Top-3 predictions HTML
+                        const top3Html = data.top3.map(p => `
+                            <div class="top3-item">
+                                <div class="top3-name">${p.name}</div>
+                                <div class="top3-bar-container">
+                                    <div class="top3-bar" style="width: ${p.probability}%; background: ${
+                                        p.severity === 'Malignant' || p.severity === 'Pre-cancerous' ? '#ef4444' : '#22c55e'
+                                    }"></div>
+                                </div>
+                                <div class="top3-prob">${p.probability}%</div>
+                            </div>
+                        `).join('');
+
+                        // Precautions HTML
+                        const precautionsHtml = data.precautions.map(p =>
+                            `<li>${p}</li>`
+                        ).join('');
+
                         const html = `
                             <div class="result-item">
-                                <div class="result-label">Result</div>
-                                <div class="result-value">${data.result}</div>
+                                <div class="result-badge" style="background: ${riskColor}">
+                                    ${data.prediction.risk} RISK
+                                </div>
+                                <div class="result-label">Detected Condition</div>
+                                <div class="result-value" style="font-size: 1.3em; font-weight: 600;">
+                                    ${data.prediction.name}
+                                </div>
+                                <div class="result-label" style="margin-top: 4px; opacity: 0.7;">
+                                    ${data.prediction.severity} • ${data.prediction.confidence}% confidence
+                                </div>
                             </div>
                             <div class="result-item">
-                                <div class="result-label">Confidence</div>
-                                <div class="result-value">
-                                    ${!isNaN(data.score) ? (data.score * 100).toFixed(2) + '%' : 'Confidence score not available'}
-                                 </div>
-
+                                <div class="result-label">Description</div>
+                                <div class="result-value" style="font-size: 0.95em;">
+                                    ${data.prediction.description}
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">Malignancy Assessment</div>
+                                <div class="malignancy-bar-container">
+                                    <div class="malignancy-bar" style="width: ${malProb}%; background: ${
+                                        malProb >= 50 ? '#ef4444' : '#22c55e'
+                                    }"></div>
+                                </div>
+                                <div class="result-value" style="font-size: 0.9em;">
+                                    ${malProb >= 50 ? '⚠️ Potentially Malignant' : '✅ Likely Benign'}
+                                    (${malProb}% malignant probability)
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-label">Top Predictions</div>
+                                ${top3Html}
                             </div>
                             <div class="recommendation">
-                                <div class="recommendation-title">Recommendation</div>
-                                <p>Please consult a dermatologist for further analysis and proper diagnosis.</p>
+                                <div class="recommendation-title">Recommended Actions</div>
+                                <ul style="text-align: left; padding-left: 20px;">
+                                    ${precautionsHtml}
+                                </ul>
+                                <p style="margin-top: 12px; font-size: 0.85em; opacity: 0.8;">
+                                    ⚕️ This tool is for preliminary screening only. Always consult a healthcare professional.
+                                </p>
                             </div>
                         `;
                         resultContent.innerHTML = html;
