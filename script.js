@@ -1,9 +1,7 @@
 // ---- API Configuration ----
-// Change this URL to your HF Spaces URL after deploying backend
-// Example: 'https://your-username-oncoscan.hf.space'
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? `http://${window.location.host}`   // Local dev
-    : 'https://YOUR-HF-SPACE-URL.hf.space';  // <-- UPDATE THIS after HF deployment
+    ? `http://${window.location.host}`
+    : 'https://amit0310-oncoscan.hf.space';
 
 document.addEventListener('DOMContentLoaded', function () {
     const uploadContainer = document.getElementById('upload-container');

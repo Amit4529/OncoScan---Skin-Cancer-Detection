@@ -13,7 +13,7 @@ jobs:
       - name: Ping HF Space health endpoint
         run: |
           # Replace with your actual HF Spaces URL
-          SPACE_URL="https://YOUR-HF-SPACE-URL.hf.space"
+          SPACE_URL="https://amit0310-oncoscan.hf.space"
           
           echo "Pinging $SPACE_URL/health ..."
           
