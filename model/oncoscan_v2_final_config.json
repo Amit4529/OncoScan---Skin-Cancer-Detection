@@ -1,0 +1,63 @@
+{
+  "version": "V2_FINAL",
+  "img_size": 456,
+  "num_classes": 8,
+  "meta_features": 9,
+  "class_names": [
+    "MEL",
+    "NV",
+    "BCC",
+    "AK",
+    "BKL",
+    "DF",
+    "VASC",
+    "SCC"
+  ],
+  "class_full_names": {
+    "MEL": "Melanoma",
+    "NV": "Melanocytic Nevus",
+    "BCC": "Basal Cell Carcinoma",
+    "AK": "Actinic Keratosis",
+    "BKL": "Benign Keratosis",
+    "DF": "Dermatofibroma",
+    "VASC": "Vascular Lesion",
+    "SCC": "Squamous Cell Carcinoma"
+  },
+  "malignant_indices": [
+    0,
+    2,
+    3,
+    7
+  ],
+  "benign_indices": [
+    1,
+    4,
+    5,
+    6
+  ],
+  "site_categories": [
+    "anterior_torso",
+    "head_neck",
+    "lower_extremity",
+    "posterior_torso",
+    "upper_extremity",
+    "other",
+    "unknown"
+  ],
+  "meta_cols": [
+    "age_norm",
+    "sex_enc",
+    "site_anterior_torso",
+    "site_head_neck",
+    "site_lower_extremity",
+    "site_posterior_torso",
+    "site_upper_extremity",
+    "site_other",
+    "site_unknown"
+  ],
+  "focal_gamma": 2.0,
+  "label_smoothing": 0.02,
+  "meta_dropout_rate": 0.5,
+  "tta_transforms": 8,
+  "oversampling_min": 1500
+}
