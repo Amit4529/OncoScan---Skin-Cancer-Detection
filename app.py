@@ -7,6 +7,13 @@ import gradio as gr
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 
+# ZeroGPU support (only available on HF Spaces)
+try:
+    import spaces
+    GPU_DECORATOR = spaces.GPU
+except ImportError:
+    GPU_DECORATOR = lambda fn: fn  # no-op locally
+
 # ============================================================
 # OncoScan V2 FINAL — Gradio + FastAPI Backend (HF Spaces)
 # ============================================================
@@ -248,6 +255,7 @@ async def predict_api(
 
 
 # ---- Gradio UI (shown on HF Space homepage) ----
+@GPU_DECORATOR
 def gradio_predict(image, age, gender):
     """Gradio interface wrapper."""
     if image is None:
