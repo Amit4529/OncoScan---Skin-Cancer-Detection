@@ -1,3 +1,10 @@
+// ---- API Configuration ----
+// Change this URL to your HF Spaces URL after deploying backend
+// Example: 'https://your-username-oncoscan.hf.space'
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? `http://${window.location.host}`   // Local dev
+    : 'https://YOUR-HF-SPACE-URL.hf.space';  // <-- UPDATE THIS after HF deployment
+
 document.addEventListener('DOMContentLoaded', function () {
     const uploadContainer = document.getElementById('upload-container');
     const imageUpload = document.getElementById('image-upload');
@@ -110,7 +117,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const age = document.getElementById('age').value;
         const gender = document.getElementById('gender').value;
-        const bodySite = document.getElementById('body-site').value;
         const image = imageUpload.files[0];
 
         if (!age || !gender || !image) {
@@ -127,11 +133,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData();
         formData.append('age', age);
         formData.append('gender', gender);
-        formData.append('body_site', bodySite);
         formData.append('image', image);
 
-        // fetch('https://oncoscan-skin-cancer-detection.onrender.com/predict', {
-        fetch('http://127.0.0.1:5000/predict', {
+        fetch(`${API_URL}/predict`, {
             method: 'POST',
             body: formData
         })
@@ -173,53 +177,61 @@ document.addEventListener('DOMContentLoaded', function () {
                             `<li>${p}</li>`
                         ).join('');
 
+                        const isMal = malProb >= 50;
+
                         const html = `
-                            <div class="result-item">
+                            <div class="result-status" style="background: ${riskColor}10; border-left: 4px solid ${riskColor}; padding: 16px 20px; border-radius: 8px; margin-bottom: 16px;">
                                 <div class="result-badge" style="background: ${riskColor}">
                                     ${data.prediction.risk} RISK
                                 </div>
-                                <div class="result-label">Detected Condition</div>
-                                <div class="result-value" style="font-size: 1.3em; font-weight: 600;">
+                                <div style="font-size: 1.4em; font-weight: 700; color: var(--text-color); margin: 8px 0 4px;">
                                     ${data.prediction.name}
                                 </div>
-                                <div class="result-label" style="margin-top: 4px; opacity: 0.7;">
-                                    ${data.prediction.severity} • ${data.prediction.confidence}% confidence
+                                <div style="font-size: 0.9em; color: ${riskColor}; font-weight: 500;">
+                                    ${data.prediction.severity === 'Malignant' ? 'Cancerous' : data.prediction.severity === 'Benign' ? 'Non-Cancerous' : 'Pre-Cancerous'} &bull; ${data.prediction.confidence}% confidence
                                 </div>
                             </div>
+
                             <div class="result-item">
-                                <div class="result-label">Description</div>
-                                <div class="result-value" style="font-size: 0.95em;">
+                                <div class="result-label">About this condition</div>
+                                <div class="result-value" style="font-size: 0.92em; line-height: 1.6; color: var(--light-text);">
                                     ${data.prediction.description}
                                 </div>
                             </div>
+
                             <div class="result-item">
-                                <div class="result-label">Malignancy Assessment</div>
+                                <div class="result-label">Risk Assessment</div>
                                 <div class="malignancy-bar-container">
-                                    <div class="malignancy-bar" style="width: ${malProb}%; background: ${
-                                        malProb >= 50 ? '#ef4444' : '#22c55e'
-                                    }"></div>
+                                    <div class="malignancy-bar" style="width: ${malProb}%; background: linear-gradient(90deg, ${isMal ? '#ef4444' : '#22c55e'}, ${isMal ? '#dc2626' : '#16a34a'});"></div>
                                 </div>
-                                <div class="result-value" style="font-size: 0.9em;">
-                                    ${malProb >= 50 ? '⚠️ Potentially Malignant' : '✅ Likely Benign'}
-                                    (${malProb}% malignant probability)
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: var(--light-text);">
+                                    <span>Non-Cancerous</span>
+                                    <span style="font-weight: 600; color: ${isMal ? '#ef4444' : '#22c55e'};">
+                                        ${isMal ? 'Possibly Cancerous' : 'Likely Non-Cancerous'}
+                                    </span>
+                                    <span>Cancerous</span>
                                 </div>
                             </div>
+
                             <div class="result-item">
-                                <div class="result-label">Top Predictions</div>
+                                <div class="result-label">Differential Diagnosis</div>
                                 ${top3Html}
                             </div>
+
                             <div class="recommendation">
-                                <div class="recommendation-title">Recommended Actions</div>
-                                <ul style="text-align: left; padding-left: 20px;">
+                                <div class="recommendation-title">
+                                    Recommended Next Steps
+                                </div>
+                                <ul>
                                     ${precautionsHtml}
                                 </ul>
-                                <p style="margin-top: 12px; font-size: 0.85em; opacity: 0.8;">
-                                    ⚕️ This tool is for preliminary screening only. Always consult a healthcare professional.
-                                </p>
+                                <div class="disclaimer">
+                                    This is a screening tool only. It does not replace professional medical advice. Please consult a dermatologist for proper clinical diagnosis.
+                                </div>
                             </div>
                         `;
                         resultContent.innerHTML = html;
-                        resultSection.classList.add('active', 'animate__animated', 'animate__fadeInUp');
+                        resultSection.classList.add('active');
                     }
                 }, 500);
             })

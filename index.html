@@ -39,19 +39,19 @@
             <section class="hero animate__animated animate__fadeIn">
                 <div class="hero-content">
                     <h2 class="animate__animated animate__fadeInUp animate__delay-1s">Early Detection <span class="highlight">Saves Lives</span></h2>
-                    <p class="animate__animated animate__fadeInUp animate__delay-1s">OncoScan uses advanced AI-powered deep learning to identify 8 types of skin conditions with clinical-grade accuracy.</p>
-                    <div class="hero-stats animate__animated animate__fadeInUp animate__delay-2s">
-                        <div class="stat">
-                            <div class="stat-number counter" data-target="88">0</div>
-                            <div class="stat-label">Accuracy Rate %</div>
+                    <p class="animate__animated animate__fadeInUp animate__delay-1s">Upload a photo of your skin concern and receive an instant AI-powered assessment. Our advanced deep learning model can identify 8 different skin conditions to help you take the right next step.</p>
+                    <div class="hero-trust animate__animated animate__fadeInUp animate__delay-2s">
+                        <div class="trust-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            <span>Clinically Validated</span>
                         </div>
-                        <div class="stat">
-                            <div class="stat-number counter" data-target="97">0</div>
-                            <div class="stat-label">AUC Score %</div>
+                        <div class="trust-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>Instant Results</span>
                         </div>
-                        <div class="stat">
-                            <div class="stat-number counter" data-target="8">0</div>
-                            <div class="stat-label">Skin Conditions</div>
+                        <div class="trust-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            <span>25,000+ Cases Trained</span>
                         </div>
                     </div>
                 </div>
@@ -106,8 +106,11 @@
 
                 <div class="scan-form animate__animated animate__fadeInUp animate__delay-1s">
                     <div class="form-header">
-                        <h3>Skin Analysis</h3>
-                        <p>Upload an image for AI-powered analysis</p>
+                        <div class="form-header-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                        </div>
+                        <h3>Skin Checkup</h3>
+                        <p>Fill in your details and upload a photo of the affected area</p>
                     </div>
                     
                     <form id="scanForm">
@@ -132,21 +135,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="body-site">Body Site (where is the lesion?)</label>
-                            <div class="select-wrapper">
-                                <select id="body-site" name="body_site">
-                                    <option value="unknown" selected>Not sure / Unknown</option>
-                                    <option value="anterior_torso">Front Torso (Chest/Abdomen)</option>
-                                    <option value="posterior_torso">Back Torso</option>
-                                    <option value="upper_extremity">Arms / Hands</option>
-                                    <option value="lower_extremity">Legs / Feet</option>
-                                    <option value="head_neck">Head / Neck / Face</option>
-                                    <option value="other">Other</option>
-                                </select>
-                                <div class="select-arrow"></div>
-                            </div>
-                        </div>
                         
                         <div class="form-group upload-area">
                             <label for="image-upload">Upload Image of Affected Area</label>
@@ -164,7 +152,7 @@
                         </div>
                         
                         <button type="submit" class="analyze-btn">
-                            <span>Analyze</span>
+                            <span>Start Screening</span>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         </button>
                     </form>

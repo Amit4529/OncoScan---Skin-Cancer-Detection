@@ -1,0 +1,30 @@
+name: Keep HF Space Alive
+
+on:
+  schedule:
+    # Run every 14 hours to stay well within the 48h inactivity window
+    - cron: '0 */14 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping HF Space health endpoint
+        run: |
+          # Replace with your actual HF Spaces URL
+          SPACE_URL="https://YOUR-HF-SPACE-URL.hf.space"
+          
+          echo "Pinging $SPACE_URL/health ..."
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SPACE_URL/health" --max-time 120)
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "Space is alive! (HTTP $HTTP_CODE)"
+          else
+            echo "Warning: Space returned HTTP $HTTP_CODE (may be waking up)"
+            # Retry after 60s in case Space was sleeping
+            sleep 60
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SPACE_URL/health" --max-time 120)
+            echo "Retry result: HTTP $HTTP_CODE"
+          fi
