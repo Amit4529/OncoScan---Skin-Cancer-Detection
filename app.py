@@ -7,14 +7,14 @@ import gradio as gr
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 
-# Force TensorFlow to use CPU to prevent ZeroGPU hanging
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
 try:
     import spaces
-    GPU_DECORATOR = spaces.GPU
 except ImportError:
-    GPU_DECORATOR = lambda fn: fn  # no-op locally
+    class spaces:
+        @staticmethod
+        def GPU(fn):
+            return fn
+
 
 # ============================================================
 # OncoScan V2 FINAL — Backend
@@ -122,7 +122,8 @@ def run_prediction(image_path, age, gender):
     metadata = preprocess_metadata(age, gender)
     if image is None or metadata is None: return {'error': 'Invalid input'}
 
-    predictions = model.predict({'image_input': image, 'meta_input': metadata}, verbose=0)[0]
+    with tf.device('/CPU:0'):
+        predictions = model.predict({'image_input': image, 'meta_input': metadata}, verbose=0)[0]
 
     pred_class_idx = int(np.argmax(predictions))
     pred_class = CLASS_NAMES[pred_class_idx]
@@ -187,7 +188,7 @@ async def predict_api(
         return {"error": str(e)}
 
 # ---- Gradio App for HF Spaces Detection ----
-@GPU_DECORATOR
+@spaces.GPU
 def gradio_predict(image, age, gender):
     import cv2
     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
