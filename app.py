@@ -216,8 +216,7 @@ demo = gr.Interface(
     ],
     outputs=gr.JSON(label="Analysis Results"),
     title="OncoScan - Skin Cancer Detection",
-    description="Upload a skin lesion image for AI-powered screening. This API also accepts calls from external frontends.",
-    allow_flagging="never",
+    description="Upload a skin lesion image for AI-powered screening.",
 )
 
 # Add CORS for frontend access
