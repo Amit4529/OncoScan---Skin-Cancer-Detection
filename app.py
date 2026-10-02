@@ -1,23 +1,21 @@
 import os
 import json
 import tempfile
-import traceback
 import numpy as np
 import gradio as gr
-from fastapi import FastAPI, UploadFile, File, Form
-from fastapi.middleware.cors import CORSMiddleware
 
+# ---- ZeroGPU-compatible spaces import ----
 try:
     import spaces
 except ImportError:
+    # Local dev fallback — no-op decorator
     class spaces:
         @staticmethod
         def GPU(fn):
             return fn
 
-
 # ============================================================
-# OncoScan V2 FINAL — Backend
+# OncoScan V2 FINAL — Pure Gradio Backend (ZeroGPU Compatible)
 # ============================================================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -49,8 +47,10 @@ CLASS_INFO = {
 # ---- Load Model ----
 print("Loading OncoScan model...")
 model = None
+tf = None
 try:
-    import tensorflow as tf
+    import tensorflow as _tf
+    tf = _tf
 
     @tf.keras.utils.register_keras_serializable(package='OncoScan')
     class ModalityDropout(tf.keras.layers.Layer):
@@ -93,6 +93,7 @@ try:
 except Exception as e:
     print(f"[ERROR] Failed to load model: {e}")
 
+# ---- Preprocessing ----
 def preprocess_image(image_path):
     import cv2
     img = cv2.imread(image_path)
@@ -116,6 +117,7 @@ def preprocess_metadata(age, sex, body_site='unknown'):
     metadata = [age_norm, sex_enc] + site_features
     return np.array([metadata], dtype=np.float32)
 
+# ---- Prediction Logic ----
 def run_prediction(image_path, age, gender):
     if model is None: return {'error': 'Model not loaded'}
     image = preprocess_image(image_path)
@@ -160,36 +162,10 @@ def run_prediction(image_path, age, gender):
         'precautions': info['precautions'],
     }
 
-# ---- FastAPI App ----
-api = FastAPI()
-api.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-
-@api.get("/health")
-async def health():
-    return {"status": "ok"}
-
-@api.post("/predict")
-async def predict_api(
-    image: UploadFile = File(...),
-    age: str = Form("55"),
-    gender: str = Form("unknown")
-):
-    try:
-        contents = await image.read()
-        suffix = os.path.splitext(image.filename or "img.jpg")[1]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-            tmp.write(contents)
-            tmp_path = tmp.name
-
-        result = run_prediction(tmp_path, age, gender)
-        os.unlink(tmp_path)
-        return result
-    except Exception as e:
-        return {"error": str(e)}
-
-# ---- Gradio App for HF Spaces Detection ----
+# ---- Gradio Predict Function (ZeroGPU decorated) ----
 @spaces.GPU
 def gradio_predict(image, age, gender):
+    """Main prediction function — decorated with @spaces.GPU for ZeroGPU."""
     import cv2
     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
         cv2.imwrite(tmp.name, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
@@ -198,10 +174,52 @@ def gradio_predict(image, age, gender):
     os.unlink(tmp_path)
     return res
 
+# ---- Pure Gradio Interface ----
 demo = gr.Interface(
     fn=gradio_predict,
-    inputs=[gr.Image(type="numpy"), gr.Number(value=30), gr.Dropdown(["male", "female", "other"], value="male")],
-    outputs=gr.JSON(),
+    inputs=[
+        gr.Image(type="numpy", label="Skin Lesion Image"),
+        gr.Number(value=30, label="Age"),
+        gr.Dropdown(["male", "female", "other"], value="male", label="Gender"),
+    ],
+    outputs=gr.JSON(label="Diagnosis Result"),
+    title="OncoScan - Skin Cancer Detection",
+    description="Upload a skin lesion image for AI-powered screening. This tool uses deep learning to classify skin lesions into 8 categories.",
+    api_name="predict",
 )
 
-app = gr.mount_gradio_app(api, demo, path="/")
+# ---- Custom /predict endpoint for Vercel frontend ----
+# Gradio's internal app is a FastAPI instance — we can attach routes to it
+from fastapi import UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
+
+demo.app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@demo.app.post("/predict")
+async def predict_api(
+    image: UploadFile = File(...),
+    age: str = Form("55"),
+    gender: str = Form("unknown"),
+):
+    """REST endpoint for Vercel frontend — accepts FormData."""
+    try:
+        contents = await image.read()
+        suffix = os.path.splitext(image.filename or "img.jpg")[1]
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            tmp.write(contents)
+            tmp_path = tmp.name
+        result = run_prediction(tmp_path, age, gender)
+        os.unlink(tmp_path)
+        return JSONResponse(content=result)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+
+# ---- Launch (REQUIRED for ZeroGPU to detect @spaces.GPU) ----
+demo.launch()
