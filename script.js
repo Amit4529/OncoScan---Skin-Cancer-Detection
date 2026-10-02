@@ -128,17 +128,21 @@ document.addEventListener('DOMContentLoaded', function () {
         loadingOverlay.style.display = 'flex';
         loadingOverlay.classList.add('animate__animated', 'animate__fadeIn');
 
-        const formData = new FormData();
-        formData.append('age', age);
-        formData.append('gender', gender);
-        formData.append('image', image);
+        // Convert image to base64 for Gradio API
+        const reader = new FileReader();
+        reader.onload = function () {
+            const base64Image = reader.result; // data:image/...;base64,...
 
-        fetch(`${API_URL}/predict`, {
-            method: 'POST',
-            body: formData
-        })
+            fetch(`${API_URL}/api/predict`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    data: [base64Image, parseFloat(age), gender]
+                })
+            })
             .then(response => response.json())
-            .then(data => {
+            .then(result => {
+                const data = result.data[0]; // Gradio wraps output in data array
                 loadingOverlay.classList.remove('animate__fadeIn');
                 loadingOverlay.classList.add('animate__fadeOut');
 
@@ -243,6 +247,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert(`Something went wrong: ${error.message}`);
                 }, 500);
             });
+        };
+        reader.readAsDataURL(image);
     });
 
     closeResults.addEventListener('click', () => {
