@@ -128,16 +128,33 @@ document.addEventListener('DOMContentLoaded', function () {
         loadingOverlay.style.display = 'flex';
         loadingOverlay.classList.add('animate__animated', 'animate__fadeIn');
 
-        const formData = new FormData();
-        formData.append('age', age);
-        formData.append('gender', gender);
-        formData.append('image', image);
+        const fileData = new FormData();
+        fileData.append('files', image);
 
-        fetch(`${API_URL}/predict`, {
+        // Gradio 6 native API (upload -> call -> SSE stream).
+        // No custom /predict route: Gradio 6 doesn't serve @demo.app routes.
+        fetch(`${API_URL}/gradio_api/upload`, {
             method: 'POST',
-            body: formData
+            body: fileData
         })
             .then(response => response.json())
+            .then(uploaded => {
+                const fp = Array.isArray(uploaded) ? uploaded[0] : uploaded;
+                const fileRef = (typeof fp === 'string')
+                    ? { path: fp, meta: { _type: 'gradio.FileData' } }
+                    : fp;
+                return fetch(`${API_URL}/gradio_api/call/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: [fileRef, Number(age), gender] })
+                }).then(response => response.json());
+            })
+            .then(call => fetch(`${API_URL}/gradio_api/call/predict/${call.event_id}`))
+            .then(response => response.text())
+            .then(stream => {
+                const lines = stream.split('\n').filter(l => l.startsWith('data: '));
+                return JSON.parse(lines[lines.length - 1].slice(6))[0];
+            })
             .then(data => {
                 loadingOverlay.classList.remove('animate__fadeIn');
                 loadingOverlay.classList.add('animate__fadeOut');

@@ -12,19 +12,20 @@ jobs:
     steps:
       - name: Ping HF Space health endpoint
         run: |
-          # Replace with your actual HF Spaces URL
+          # No custom /health route (Gradio 6 doesn't serve @demo.app
+          # routes) — ping the Gradio root instead to prevent 48h sleep.
           SPACE_URL="https://amit0310-oncoscan.hf.space"
-          
-          echo "Pinging $SPACE_URL/health ..."
-          
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SPACE_URL/health" --max-time 120)
-          
+
+          echo "Pinging $SPACE_URL/ ..."
+
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SPACE_URL/" --max-time 120)
+
           if [ "$HTTP_CODE" = "200" ]; then
             echo "Space is alive! (HTTP $HTTP_CODE)"
           else
             echo "Warning: Space returned HTTP $HTTP_CODE (may be waking up)"
             # Retry after 60s in case Space was sleeping
             sleep 60
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SPACE_URL/health" --max-time 120)
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SPACE_URL/" --max-time 120)
             echo "Retry result: HTTP $HTTP_CODE"
           fi
