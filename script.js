@@ -4,6 +4,7 @@ const API_URL = window.location.hostname === 'localhost' || window.location.host
     : 'https://amit0310-oncoscan.hf.space';
 
 document.addEventListener('DOMContentLoaded', function () {
+    // ---- DOM Elements ----
     const uploadContainer = document.getElementById('upload-container');
     const imageUpload = document.getElementById('image-upload');
     const uploadPlaceholder = document.getElementById('upload-placeholder');
@@ -14,43 +15,59 @@ document.addEventListener('DOMContentLoaded', function () {
     const resultContent = document.getElementById('results-content');
     const closeResults = document.getElementById('close-results');
 
-    // Animate counters
-    const counters = document.querySelectorAll('.counter');
-    const speed = 200;
-    const observer = new IntersectionObserver((entries) => {
+    // ---- Model Metrics Modal ----
+    const metricsModal = document.getElementById('metricsModal');
+    const openMetricsBtn = document.getElementById('openMetricsBtn');
+    const closeMetricsBtn = document.getElementById('closeMetricsBtn');
+
+    if (openMetricsBtn && metricsModal) {
+        openMetricsBtn.addEventListener('click', () => {
+            metricsModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+
+    if (closeMetricsBtn && metricsModal) {
+        closeMetricsBtn.addEventListener('click', () => {
+            metricsModal.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        metricsModal.addEventListener('click', (e) => {
+            if (e.target === metricsModal) {
+                metricsModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // ---- Navbar Scroll Effect ----
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 10) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // ---- Scroll Animations ----
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -40px 0px' };
+    const scrollObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting && entry.target.classList.contains('counter')) {
-                const target = parseInt(entry.target.getAttribute('data-target'));
-                let count = 0;
-                const updateCount = () => {
-                    const increment = target / speed;
-                    if (count < target) {
-                        count += increment;
-                        entry.target.innerText = Math.ceil(count);
-                        setTimeout(updateCount, 1);
-                    } else {
-                        entry.target.innerText = target;
-                    }
-                };
-                updateCount();
-                observer.unobserve(entry.target);
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in-up');
+                scrollObserver.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.5 });
-    counters.forEach(counter => observer.observe(counter));
+    }, observerOptions);
 
-    const animateOnScroll = () => {
-        const elements = document.querySelectorAll('.info-card, .scan-form');
-        elements.forEach(element => {
-            const elementPosition = element.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
-            if (elementPosition < screenPosition) {
-                element.classList.add('animate__animated', 'animate__fadeInUp');
-            }
-        });
-    };
-    window.addEventListener('scroll', animateOnScroll);
+    document.querySelectorAll('.feature-card, .about-card, .scan-form-card, .scan-info, .fact-highlight, .fact-desc').forEach(el => {
+        el.style.opacity = '0';
+        scrollObserver.observe(el);
+    });
 
+    // ---- Image Upload ----
     imageUpload.addEventListener('change', function () {
         const file = this.files[0];
         if (file) {
@@ -60,7 +77,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 imagePreview.style.display = 'block';
                 const img = document.createElement('img');
                 img.src = e.target.result;
-                img.classList.add('animate__animated', 'animate__fadeIn');
                 imagePreview.innerHTML = '';
                 imagePreview.appendChild(img);
             };
@@ -68,48 +84,36 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // ---- Drag & Drop ----
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        uploadContainer.addEventListener(eventName, preventDefaults, false);
+        uploadContainer.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, false);
     });
 
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
     ['dragenter', 'dragover'].forEach(eventName => {
-        uploadContainer.addEventListener(eventName, highlight, false);
+        uploadContainer.addEventListener(eventName, () => {
+            uploadContainer.classList.add('highlight');
+        }, false);
     });
 
     ['dragleave', 'drop'].forEach(eventName => {
-        uploadContainer.addEventListener(eventName, unhighlight, false);
+        uploadContainer.addEventListener(eventName, () => {
+            uploadContainer.classList.remove('highlight');
+        }, false);
     });
 
-    function highlight() {
-        uploadContainer.classList.add('highlight');
-        uploadContainer.style.borderColor = 'var(--primary-color)';
-        uploadContainer.style.backgroundColor = 'rgba(0, 102, 204, 0.05)';
-        uploadContainer.style.transform = 'scale(1.02)';
-    }
-
-    function unhighlight() {
-        uploadContainer.classList.remove('highlight');
-        uploadContainer.style.borderColor = 'var(--border-color)';
-        uploadContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        uploadContainer.style.transform = 'scale(1)';
-    }
-
-    uploadContainer.addEventListener('drop', handleDrop, false);
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
+    uploadContainer.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
         if (files.length) {
             imageUpload.files = files;
             const event = new Event('change');
             imageUpload.dispatchEvent(event);
         }
-    }
+    }, false);
 
+    // ---- Form Submit → Gradio API ----
     scanForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -118,21 +122,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const image = imageUpload.files[0];
 
         if (!age || !gender || !image) {
-            scanForm.classList.add('animate__animated', 'animate__shakeX');
-            setTimeout(() => {
-                scanForm.classList.remove('animate__animated', 'animate__shakeX');
-            }, 1000);
+            scanForm.style.animation = 'shakeX 0.5s';
+            setTimeout(() => { scanForm.style.animation = ''; }, 600);
             return;
         }
 
         loadingOverlay.style.display = 'flex';
-        loadingOverlay.classList.add('animate__animated', 'animate__fadeIn');
 
         const fileData = new FormData();
         fileData.append('files', image);
 
-        // Gradio 6 native API (upload -> call -> SSE stream).
-        // No custom /predict route: Gradio 6 doesn't serve @demo.app routes.
+        // Gradio 6 native API: upload → call → SSE stream
         fetch(`${API_URL}/gradio_api/upload`, {
             method: 'POST',
             body: fileData
@@ -156,138 +156,133 @@ document.addEventListener('DOMContentLoaded', function () {
                 return JSON.parse(lines[lines.length - 1].slice(6))[0];
             })
             .then(data => {
-                loadingOverlay.classList.remove('animate__fadeIn');
-                loadingOverlay.classList.add('animate__fadeOut');
+                loadingOverlay.style.display = 'none';
 
-                setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                    loadingOverlay.classList.remove('animate__fadeOut');
-
-                    if (data.error) {
-                        alert(`Error: ${data.error}`);
-                    } else {
-                        const riskColors = {
-                            'HIGH': '#ef4444',
-                            'MODERATE': '#f59e0b',
-                            'LOW': '#22c55e'
-                        };
-                        const riskColor = riskColors[data.prediction.risk] || '#6b7280';
-                        const malProb = data.malignant_probability || 0;
-
-                        // Top-3 predictions HTML
-                        const top3Html = data.top3.map(p => `
-                            <div class="top3-item">
-                                <div class="top3-name">${p.name}</div>
-                                <div class="top3-bar-container">
-                                    <div class="top3-bar" style="width: ${p.probability}%; background: ${
-                                        p.severity === 'Malignant' || p.severity === 'Pre-cancerous' ? '#ef4444' : '#22c55e'
-                                    }"></div>
-                                </div>
-                                <div class="top3-prob">${p.probability}%</div>
-                            </div>
-                        `).join('');
-
-                        // Precautions HTML
-                        const precautionsHtml = data.precautions.map(p =>
-                            `<li>${p}</li>`
-                        ).join('');
-
-                        const isMal = malProb >= 50;
-
-                        const html = `
-                            <div class="result-status" style="background: ${riskColor}10; border-left: 4px solid ${riskColor}; padding: 16px 20px; border-radius: 8px; margin-bottom: 16px;">
-                                <div class="result-badge" style="background: ${riskColor}">
-                                    ${data.prediction.risk} RISK
-                                </div>
-                                <div style="font-size: 1.4em; font-weight: 700; color: var(--text-color); margin: 8px 0 4px;">
-                                    ${data.prediction.name}
-                                </div>
-                                <div style="font-size: 0.9em; color: ${riskColor}; font-weight: 500;">
-                                    ${data.prediction.severity === 'Malignant' ? 'Cancerous' : data.prediction.severity === 'Benign' ? 'Non-Cancerous' : 'Pre-Cancerous'} &bull; ${data.prediction.confidence}% confidence
-                                </div>
-                            </div>
-
-                            <div class="result-item">
-                                <div class="result-label">About this condition</div>
-                                <div class="result-value" style="font-size: 0.92em; line-height: 1.6; color: var(--light-text);">
-                                    ${data.prediction.description}
-                                </div>
-                            </div>
-
-                            <div class="result-item">
-                                <div class="result-label">Risk Assessment</div>
-                                <div class="malignancy-bar-container">
-                                    <div class="malignancy-bar" style="width: ${malProb}%; background: linear-gradient(90deg, ${isMal ? '#ef4444' : '#22c55e'}, ${isMal ? '#dc2626' : '#16a34a'});"></div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: var(--light-text);">
-                                    <span>Non-Cancerous</span>
-                                    <span style="font-weight: 600; color: ${isMal ? '#ef4444' : '#22c55e'};">
-                                        ${isMal ? 'Possibly Cancerous' : 'Likely Non-Cancerous'}
-                                    </span>
-                                    <span>Cancerous</span>
-                                </div>
-                            </div>
-
-                            <div class="result-item">
-                                <div class="result-label">Differential Diagnosis</div>
-                                ${top3Html}
-                            </div>
-
-                            <div class="recommendation">
-                                <div class="recommendation-title">
-                                    Recommended Next Steps
-                                </div>
-                                <ul>
-                                    ${precautionsHtml}
-                                </ul>
-                                <div class="disclaimer">
-                                    This is a screening tool only. It does not replace professional medical advice. Please consult a dermatologist for proper clinical diagnosis.
-                                </div>
-                            </div>
-                        `;
-                        resultContent.innerHTML = html;
-                        resultSection.classList.add('active');
-                    }
-                }, 500);
+                if (data.error) {
+                    alert(`Error: ${data.error}`);
+                } else {
+                    displayResults(data);
+                }
             })
             .catch(error => {
-                loadingOverlay.classList.remove('animate__fadeIn');
-                loadingOverlay.classList.add('animate__fadeOut');
-
-                setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                    loadingOverlay.classList.remove('animate__fadeOut');
-                    alert(`Something went wrong: ${error.message}`);
-                }, 500);
+                loadingOverlay.style.display = 'none';
+                alert(`Something went wrong: ${error.message}`);
             });
     });
 
+    // ---- Display Results ----
+    function displayResults(data) {
+        const riskColors = {
+            'HIGH': '#ef4444',
+            'MODERATE': '#f59e0b',
+            'LOW': '#22c55e'
+        };
+        const riskColor = riskColors[data.prediction.risk] || '#6b7280';
+        const malProb = data.malignant_probability || 0;
+        const isMal = malProb >= 50;
+
+        // Top-3 predictions
+        const top3Html = data.top3.map(p => `
+            <div class="top3-item">
+                <div class="top3-name">${p.name}</div>
+                <div class="top3-bar-container">
+                    <div class="top3-bar" style="width: ${p.probability}%; background: ${
+                        p.severity === 'Malignant' || p.severity === 'Pre-cancerous' ? '#ef4444' : '#22c55e'
+                    }"></div>
+                </div>
+                <div class="top3-prob">${p.probability}%</div>
+            </div>
+        `).join('');
+
+        // Precautions
+        const precautionsHtml = data.precautions.map(p =>
+            `<li>${p}</li>`
+        ).join('');
+
+        const severityLabel = data.prediction.severity === 'Malignant' ? 'Cancerous'
+            : data.prediction.severity === 'Benign' ? 'Non-Cancerous' : 'Pre-Cancerous';
+
+        const html = `
+            <div class="result-status" style="background: ${riskColor}10; border-left: 4px solid ${riskColor}; padding: 16px 20px; border-radius: 8px; margin-bottom: 16px;">
+                <div class="result-badge" style="background: ${riskColor}">
+                    ${data.prediction.risk} RISK
+                </div>
+                <div style="font-size: 1.4em; font-weight: 700; color: var(--text); margin: 8px 0 4px;">
+                    ${data.prediction.name}
+                </div>
+                <div style="font-size: 0.9em; color: ${riskColor}; font-weight: 500;">
+                    ${severityLabel} &bull; ${data.prediction.confidence}% confidence
+                </div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">About this condition</div>
+                <div class="result-value">
+                    ${data.prediction.description}
+                </div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">Risk Assessment</div>
+                <div class="malignancy-bar-container">
+                    <div class="malignancy-bar" style="width: ${malProb}%; background: linear-gradient(90deg, ${isMal ? '#ef4444' : '#22c55e'}, ${isMal ? '#dc2626' : '#16a34a'});"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-secondary);">
+                    <span>Non-Cancerous</span>
+                    <span style="font-weight: 600; color: ${isMal ? '#ef4444' : '#22c55e'};">
+                        ${isMal ? 'Possibly Cancerous' : 'Likely Non-Cancerous'}
+                    </span>
+                    <span>Cancerous</span>
+                </div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">Differential Diagnosis</div>
+                ${top3Html}
+            </div>
+
+            <div class="recommendation">
+                <div class="recommendation-title">
+                    Recommended Next Steps
+                </div>
+                <ul>
+                    ${precautionsHtml}
+                </ul>
+                <div class="disclaimer">
+                    This is a screening tool only. It does not replace professional medical advice. Please consult a dermatologist for proper clinical diagnosis.
+                </div>
+            </div>
+        `;
+
+        resultContent.innerHTML = html;
+        resultSection.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // ---- Close Results ----
     closeResults.addEventListener('click', () => {
         resultSection.classList.remove('active');
         resultContent.innerHTML = '';
+        document.body.style.overflow = '';
     });
 
-    const buttons = document.querySelectorAll('.analyze-btn, .contact-button');
-    buttons.forEach(button => {
-        button.addEventListener('mousedown', function (e) {
-            const x = e.clientX - e.target.getBoundingClientRect().left;
-            const y = e.clientY - e.target.getBoundingClientRect().top;
-            const ripple = document.createElement('span');
-            ripple.classList.add('ripple');
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
-            this.appendChild(ripple);
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        });
+    // Close results on overlay click
+    resultSection.addEventListener('click', (e) => {
+        if (e.target === resultSection) {
+            resultSection.classList.remove('active');
+            resultContent.innerHTML = '';
+            document.body.style.overflow = '';
+        }
     });
-
-    const animateElements = document.querySelectorAll('.hero h2, .hero p, .hero-stats, .hero-image');
-    animateElements.forEach((element, index) => {
-        element.classList.add('animate__animated', 'animate__fadeInUp');
-        element.style.animationDelay = `${0.3 + (index * 0.2)}s`;
-    });
-
-    animateOnScroll();
 });
+
+// ---- Shake animation (used for form validation) ----
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `
+    @keyframes shakeX {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-6px); }
+        40%, 80% { transform: translateX(6px); }
+    }
+`;
+document.head.appendChild(shakeStyle);
